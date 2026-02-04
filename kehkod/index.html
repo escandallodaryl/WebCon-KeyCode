@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebCon - KeyCode</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <div style="text-align: right; margin-bottom: 10px;">
+        <button id="admin-login-btn" class="delete-btn" style="border-color: var(--brand-teal); color: var(--brand-teal);">Admin Login</button>
+        <button id="admin-logout-btn" class="delete-btn" style="display: none;">Logout Admin</button>
+    </div>
+
+    <div class="input-section" id="admin-controls" style="display: none;">
+        <form id="task-form">
+            <input type="hidden" id="task-id">
+            <input type="text" id="task-input" placeholder="Enter New KeyCode..." required>
+            <button type="submit" id="submit-btn">Update KeyCode</button>
+        </form>
+    </div>
+
+    <div class="container">
+       
+        <div class="card">
+            <div class="card-header">
+                <h3>Current KeyCode</h3>
+                <div class="keycode-display" id="current-code-val">--------</div>
+            </div>
+            <div class="card-footer" style="display: flex; padding: 20px 0; border-top: 1px solid #eeeeee;">
+                <div class="stat-item" style="flex: 1; text-align: center;">
+                    <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">LAST UPDATED</span>
+                    <span class="value" id="last-updated-val" style="font-size: 0.85rem; font-weight: 600;"></span>
+                </div>
+                <div class="stat-item border-left" style="flex: 1; text-align: center; border-left: 1px solid #eeeeee;">
+                    <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">TIME LEFT</span>
+                    <span class="value" id="time-left-val" style="font-size: 0.85rem; font-weight: 600;"></span>
+                </div>
+                <div class="stat-item border-left" style="flex: 1; text-align: center; border-left: 1px solid #eeeeee;">
+                    <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">NEXT UPDATE</span>
+                    <span class="value" id="next-update-val" style="font-size: 0.85rem; font-weight: 600;"></span>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 40px; color: #666;">KeyCode History</h3>
+        
+        <div class="table-container">
+          <div style="text-align: right; margin-top: 15px;">
+              <button id="clear-all-btn" class="delete-btn" style="display: none; background-color: var(--danger-red); color: white;">
+                  Clear All Records
+              </button>
+          </div>
+            <table id="history-table">
+                <thead>
+                    <tr>
+                        <th>KeyCode</th>
+                        <th>Time Added</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="task-list">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
