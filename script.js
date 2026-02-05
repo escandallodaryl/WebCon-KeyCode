@@ -35,12 +35,12 @@ const clearAllBtn = document.getElementById('clear-all-btn');
 let countdownInterval;
 
 // --- ADMIN AUTH LOGIC ---
-const ADMIN_PASSWORD = "111"; 
+const ADMIN_PASSWORD = "www"; 
 
 function checkAuth() {
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     
-    // Toggle Admin Inputs & History Section
+    // Toggle Admin Panel & History Section Visibility
     document.getElementById('admin-controls').style.display = isAdmin ? 'block' : 'none';
     const historySection = document.getElementById('history-section');
     if (historySection) historySection.style.display = isAdmin ? 'block' : 'none';
@@ -59,8 +59,15 @@ function checkAuth() {
 }
 
 // Modal Listeners
-loginBtn.addEventListener('click', () => { loginModal.style.display = 'flex'; adminPassInput.value = ''; });
-cancelLogin.addEventListener('click', () => { loginModal.style.display = 'none'; });
+loginBtn.addEventListener('click', () => { 
+    loginModal.style.display = 'flex'; 
+    adminPassInput.value = ''; 
+});
+
+cancelLogin.addEventListener('click', () => { 
+    loginModal.style.display = 'none'; 
+});
+
 togglePassword.addEventListener('click', () => {
     const type = adminPassInput.getAttribute('type') === 'password' ? 'text' : 'password';
     adminPassInput.setAttribute('type', type);
@@ -161,9 +168,13 @@ function renderUI(tasks = []) {
             }
         }, 1000);
 
-        // Populate Table Rows
-        tasks.forEach((task) => {
+        // Populate Table Rows with staggered animation
+        tasks.forEach((task, index) => {
             const row = document.createElement('tr');
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(10px)';
+            row.style.transition = 'all 0.4s ease';
+
             row.innerHTML = `
                 <td><strong>${task.code}</strong></td>
                 <td>${task.time}</td>
@@ -171,6 +182,12 @@ function renderUI(tasks = []) {
                 ${isAdmin ? `<td><button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button></td>` : ''}
             `;
             taskList.appendChild(row);
+
+            // Stagger entrance
+            setTimeout(() => {
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, index * 50);
         });
     } else {
         currentCodeVal.innerText = "--------";

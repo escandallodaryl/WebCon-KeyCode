@@ -7,10 +7,10 @@
 </head>
 <body>
 
-  <div class="container">
+  <div class="container main_flex">
     <div style="text-align: right; margin-bottom: 10px;">
-        <button id="admin-login-btn" class="delete-btn" style="border-color: var(--brand-teal); color: var(--brand-teal);">Admin Login</button>
-        <button id="admin-logout-btn" class="delete-btn" style="display: none;">Logout Admin</button>
+        <button id="admin-login-btn" class="delete-btn" style="background: var(--brand-teal); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">Admin Login</button>
+        <button id="admin-logout-btn" class="delete-btn" style="background: var(--brand-teal); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">Logout Admin</button>
     </div>
 
     <div id="login-modal" class="modal">
@@ -21,41 +21,43 @@
                 <span id="toggle-password" class="eye-icon">👁️</span>
             </div>
             <div class="modal-buttons">
-                <button id="cancel-login" class="delete-btn">Cancel</button>
                 <button id="confirm-login" class="submit-btn" style="background: var(--brand-teal); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">Login</button>
+                <button id="cancel-login" class="delete-btn" style="background: var(--brand-teal); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">Cancel</button>
             </div>
         </div>
     </div>
 
-    <div id="admin-controls" style="display: none; margin-bottom: 30px;">
-        <div class="card" style="border: 2px dashed var(--brand-teal);">
+    <div class="keycode_con">
+        <div id="admin-controls" style="display: none; margin-bottom: 30px;">
+            <div class="card" style="border: 2px dashed var(--brand-teal);">
+                <div class="card-header">
+                    <h3>Update KeyCode</h3>
+                </div>
+                <form id="task-form" style="padding: 20px; display: flex; gap: 10px;">
+                    <input type="text" id="task-input" placeholder="Enter KeyCode..." required inputmode="numeric" maxlength="8" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                    <button type="submit" class="submit-btn" style="background: var(--brand-teal); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Update Cloud</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
             <div class="card-header">
-                <h3>Update KeyCode</h3>
+                <h3>Current KeyCode</h3>
+                <div class="keycode-display" id="current-code-val">--------</div>
             </div>
-            <form id="task-form" style="padding: 20px; display: flex; gap: 10px;">
-                <input type="text" id="task-input" placeholder="Enter KeyCode..." required inputmode="numeric" maxlength="8" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-                <button type="submit" class="submit-btn" style="background: var(--brand-teal); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Update Cloud</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header">
-            <h3>Current KeyCode</h3>
-            <div class="keycode-display" id="current-code-val">--------</div>
-        </div>
-        <div class="card-footer" style="display: flex; padding: 20px 0; border-top: 1px solid #eeeeee;">
-            <div class="stat-item" style="flex: 1; text-align: center;">
-                <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">LAST UPDATED</span>
-                <span class="value" id="last-updated-val" style="font-size: 0.85rem; font-weight: 600;"></span>
-            </div>
-            <div class="stat-item border-left" style="flex: 1; text-align: center; border-left: 1px solid #eeeeee;">
-                <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">TIME LEFT</span>
-                <span class="value" id="time-left-val" style="font-size: 0.85rem; font-weight: 600;"></span>
-            </div>
-            <div class="stat-item border-left" style="flex: 1; text-align: center; border-left: 1px solid #eeeeee;">
-                <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">NEXT UPDATE</span>
-                <span class="value" id="next-update-val" style="font-size: 0.85rem; font-weight: 600;"></span>
+            <div class="card-footer" style="display: flex; padding: 20px 0; border-top: 1px solid #eeeeee;">
+                <div class="stat-item" style="flex: 1; text-align: center;">
+                    <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">LAST UPDATED</span>
+                    <span class="value" id="last-updated-val" style="font-size: 0.85rem; font-weight: 600;"></span>
+                </div>
+                <div class="stat-item border-left" style="flex: 1; text-align: center; border-left: 1px solid #eeeeee;">
+                    <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">TIME LEFT</span>
+                    <span class="value" id="time-left-val" style="font-size: 0.85rem; font-weight: 600;"></span>
+                </div>
+                <div class="stat-item border-left" style="flex: 1; text-align: center; border-left: 1px solid #eeeeee;">
+                    <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">NEXT UPDATE</span>
+                    <span class="value" id="next-update-val" style="font-size: 0.85rem; font-weight: 600;"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -90,3 +92,6 @@
   <script src="script.js"></script>
 </body>
 </html>
+
+
+<!-- Developed using AI, trained by Zack Lim -->
