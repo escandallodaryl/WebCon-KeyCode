@@ -40,11 +40,17 @@ const ADMIN_PASSWORD = "111";
 function checkAuth() {
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     
+    // Toggle Admin Inputs & History Section
     document.getElementById('admin-controls').style.display = isAdmin ? 'block' : 'none';
+    const historySection = document.getElementById('history-section');
+    if (historySection) historySection.style.display = isAdmin ? 'block' : 'none';
+    
+    // Toggle Buttons
     loginBtn.style.display = isAdmin ? 'none' : 'inline-block';
     logoutBtn.style.display = isAdmin ? 'inline-block' : 'none';
     clearAllBtn.style.display = isAdmin ? 'inline-block' : 'none';
     
+    // Refresh UI to update column visibility immediately
     db.ref('keycodes').once('value', (snapshot) => {
         const data = snapshot.val();
         const tasks = data ? Object.values(data).reverse() : [];
@@ -66,28 +72,33 @@ confirmLogin.addEventListener('click', () => {
         sessionStorage.setItem('isAdmin', 'true');
         loginModal.style.display = 'none';
         checkAuth();
-    } else { alert("Incorrect password!"); }
+    } else { 
+        alert("Incorrect password!"); 
+    }
 });
 
-logoutBtn.addEventListener('click', () => { sessionStorage.removeItem('isAdmin'); checkAuth(); });
+logoutBtn.addEventListener('click', () => { 
+    sessionStorage.removeItem('isAdmin'); 
+    checkAuth(); 
+});
 
 // --- CORE LOGIC ---
 
 // 1. Numeric Restriction & Max 12 Digits
 taskInput.addEventListener('input', (e) => {
     let val = e.target.value.replace(/[^0-9]/g, ''); // Numbers only
-    if (val.length > 12) val = val.substring(0, 12); // Max 12
+    if (val.length > 12) val = val.substring(0, 12); // Max 12 restriction
     e.target.value = val;
 });
 
-// 2. Real-time Listener
+// 2. Real-time Listener for Cloud Data
 db.ref('keycodes').on('value', (snapshot) => {
     const data = snapshot.val();
     const tasks = data ? Object.values(data).reverse() : [];
     renderUI(tasks);
 });
 
-// 3. Add New Code with Validation (Min 8 Digits)
+// 3. Add New Code with Validation (Min 8, Max 12)
 taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const val = taskInput.value.trim();
@@ -111,20 +122,23 @@ taskForm.addEventListener('submit', (e) => {
     taskInput.value = '';
 });
 
-// 4. Render UI
+// 4. Render UI Function
 function renderUI(tasks = []) {
     taskList.innerHTML = '';
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 
-    // Toggle Action Column Header
+    // Strictly Toggle Action Column Header visibility
     const actionHeader = document.querySelector('#history-table th:nth-child(4)');
-    if (actionHeader) actionHeader.style.display = isAdmin ? 'table-cell' : 'none';
+    if (actionHeader) {
+        actionHeader.style.display = isAdmin ? 'table-cell' : 'none';
+    }
 
     if (tasks.length > 0) {
         const latest = tasks[0];
         currentCodeVal.innerText = latest.code;
         lastUpdatedVal.innerText = `${latest.date} ${latest.time}`;
 
+        // 4-Hour Expiry Logic
         const nextTimeDate = new Date(latest.fullTimestamp + 4 * 60 * 60 * 1000);
         nextUpdateVal.innerText = nextTimeDate.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit' });
 
@@ -134,6 +148,7 @@ function renderUI(tasks = []) {
             const now = new Date().getTime();
             const expiration = latest.fullTimestamp + (4 * 60 * 60 * 1000);
             const dist = expiration - now;
+            
             if (dist < 0) {
                 timeLeftDisplay.innerText = "EXPIRED";
                 timeLeftDisplay.style.color = "red";
@@ -146,7 +161,7 @@ function renderUI(tasks = []) {
             }
         }, 1000);
 
-        // Populate Table
+        // Populate Table Rows
         tasks.forEach((task) => {
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -165,8 +180,14 @@ function renderUI(tasks = []) {
     }
 }
 
-// 5. Delete Functions
-window.deleteTask = (id) => { if(confirm("Delete this record?")) db.ref('keycodes/' + id).remove(); };
-clearAllBtn.addEventListener('click', () => { if(confirm("Clear ALL records?")) db.ref('keycodes').remove(); });
+// 5. Global Admin Functions
+window.deleteTask = (id) => { 
+    if(confirm("Delete this record?")) db.ref('keycodes/' + id).remove(); 
+};
 
+clearAllBtn.addEventListener('click', () => { 
+    if(confirm("Clear ALL records? This cannot be undone.")) db.ref('keycodes').remove(); 
+});
+
+// Run Auth check on initial load
 document.addEventListener('DOMContentLoaded', checkAuth);

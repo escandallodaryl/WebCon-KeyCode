@@ -60,26 +60,27 @@
         </div>
     </div>
 
-    <h3 style="margin-top: 40px; color: #666;">KeyCode History</h3>
-    
-    <div class="table-container">
-      <div style="text-align: right; margin-top: 15px;">
-          <button id="clear-all-btn" class="delete-btn" style="display: none; background-color: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-bottom: 10px;">
-              Clear All Records
-          </button>
-      </div>
-        <table id="history-table">
-            <thead>
-                <tr>
-                    <th>KeyCode</th>
-                    <th>Time Added</th>
-                    <th>Date</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id="task-list">
-                </tbody>
-        </table>
+    <div id="history-section" style="display: none;">
+        <h3 style="margin-top: 40px; color: #666;">KeyCode History</h3>
+        
+        <div class="table-container">
+            <div style="text-align: right; margin-top: 15px;">
+                <button id="clear-all-btn" class="delete-btn" style="display: none; background-color: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-bottom: 10px;">
+                    Clear All Records
+                </button>
+            </div>
+            <table id="history-table">
+                <thead>
+                    <tr>
+                        <th>KeyCode</th>
+                        <th>Time Added</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="task-list"></tbody>
+            </table>
+        </div>
     </div>
   </div>
 
