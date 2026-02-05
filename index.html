@@ -13,60 +13,79 @@
         <button id="admin-logout-btn" class="delete-btn" style="display: none;">Logout Admin</button>
     </div>
 
-    <div class="input-section" id="admin-controls" style="display: none;">
-        <form id="task-form">
-            <input type="hidden" id="task-id">
-            <input type="text" id="task-input" placeholder="Enter New KeyCode..." required>
-            <button type="submit" id="submit-btn">Update KeyCode</button>
-        </form>
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <h4>Admin Access</h4>
+            <div class="password-container">
+                <input type="password" id="admin-pass-input" placeholder="Enter Password">
+                <span id="toggle-password" class="eye-icon">👁️</span>
+            </div>
+            <div class="modal-buttons">
+                <button id="cancel-login" class="delete-btn">Cancel</button>
+                <button id="confirm-login" class="submit-btn" style="background: var(--brand-teal); color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;">Login</button>
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-       
-        <div class="card">
+    <div id="admin-controls" style="display: none; margin-bottom: 30px;">
+        <div class="card" style="border: 2px dashed var(--brand-teal);">
             <div class="card-header">
-                <h3>Current KeyCode</h3>
-                <div class="keycode-display" id="current-code-val">--------</div>
+                <h3>Update KeyCode</h3>
             </div>
-            <div class="card-footer" style="display: flex; padding: 20px 0; border-top: 1px solid #eeeeee;">
-                <div class="stat-item" style="flex: 1; text-align: center;">
-                    <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">LAST UPDATED</span>
-                    <span class="value" id="last-updated-val" style="font-size: 0.85rem; font-weight: 600;"></span>
-                </div>
-                <div class="stat-item border-left" style="flex: 1; text-align: center; border-left: 1px solid #eeeeee;">
-                    <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">TIME LEFT</span>
-                    <span class="value" id="time-left-val" style="font-size: 0.85rem; font-weight: 600;"></span>
-                </div>
-                <div class="stat-item border-left" style="flex: 1; text-align: center; border-left: 1px solid #eeeeee;">
-                    <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">NEXT UPDATE</span>
-                    <span class="value" id="next-update-val" style="font-size: 0.85rem; font-weight: 600;"></span>
-                </div>
-            </div>
-        </div>
-
-        <h3 style="margin-top: 40px; color: #666;">KeyCode History</h3>
-        
-        <div class="table-container">
-          <div style="text-align: right; margin-top: 15px;">
-              <button id="clear-all-btn" class="delete-btn" style="display: none; background-color: var(--danger-red); color: white;">
-                  Clear All Records
-              </button>
-          </div>
-            <table id="history-table">
-                <thead>
-                    <tr>
-                        <th>KeyCode</th>
-                        <th>Time Added</th>
-                        <th>Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="task-list">
-                    </tbody>
-            </table>
+            <form id="task-form" style="padding: 20px; display: flex; gap: 10px;">
+                <input type="text" id="task-input" placeholder="Enter new KeyCode..." required style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
+                <button type="submit" class="submit-btn" style="background: var(--brand-teal); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Update Cloud</button>
+            </form>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div class="card">
+        <div class="card-header">
+            <h3>Current KeyCode</h3>
+            <div class="keycode-display" id="current-code-val">--------</div>
+        </div>
+        <div class="card-footer" style="display: flex; padding: 20px 0; border-top: 1px solid #eeeeee;">
+            <div class="stat-item" style="flex: 1; text-align: center;">
+                <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">LAST UPDATED</span>
+                <span class="value" id="last-updated-val" style="font-size: 0.85rem; font-weight: 600;"></span>
+            </div>
+            <div class="stat-item border-left" style="flex: 1; text-align: center; border-left: 1px solid #eeeeee;">
+                <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">TIME LEFT</span>
+                <span class="value" id="time-left-val" style="font-size: 0.85rem; font-weight: 600;"></span>
+            </div>
+            <div class="stat-item border-left" style="flex: 1; text-align: center; border-left: 1px solid #eeeeee;">
+                <span class="label" style="display: block; font-size: 0.7rem; color: #666; font-weight: bold;">NEXT UPDATE</span>
+                <span class="value" id="next-update-val" style="font-size: 0.85rem; font-weight: 600;"></span>
+            </div>
+        </div>
+    </div>
+
+    <h3 style="margin-top: 40px; color: #666;">KeyCode History</h3>
+    
+    <div class="table-container">
+      <div style="text-align: right; margin-top: 15px;">
+          <button id="clear-all-btn" class="delete-btn" style="display: none; background-color: #ff4d4d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-bottom: 10px;">
+              Clear All Records
+          </button>
+      </div>
+        <table id="history-table">
+            <thead>
+                <tr>
+                    <th>KeyCode</th>
+                    <th>Time Added</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="task-list">
+                </tbody>
+        </table>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  
+  <script src="script.js"></script>
 </body>
 </html>
