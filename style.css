@@ -196,3 +196,8 @@ tr:hover {
     justify-content: space-between;
     gap: 10px;
 }
+
+.action-cell {
+    text-align: center;
+    min-width: 120px;
+}

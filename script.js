@@ -46,7 +46,7 @@ function checkAuth() {
     logoutBtn.style.display = isAdmin ? 'inline-block' : 'none';
     clearAllBtn.style.display = isAdmin ? 'inline-block' : 'none';
     
-    // Refresh table rows to show/hide delete buttons
+    // Refresh UI to handle column visibility immediately
     db.ref('keycodes').once('value', (snapshot) => {
         const data = snapshot.val();
         const tasks = data ? Object.values(data).reverse() : [];
@@ -54,90 +54,87 @@ function checkAuth() {
     });
 }
 
-// Open Modal
-loginBtn.addEventListener('click', () => {
-    loginModal.style.display = 'flex';
-    adminPassInput.value = ''; 
-});
-
-// Close Modal
-cancelLogin.addEventListener('click', () => {
-    loginModal.style.display = 'none';
-});
-
-// Toggle Password Visibility
+// Modal Event Listeners
+loginBtn.addEventListener('click', () => { loginModal.style.display = 'flex'; adminPassInput.value = ''; });
+cancelLogin.addEventListener('click', () => { loginModal.style.display = 'none'; });
 togglePassword.addEventListener('click', () => {
     const type = adminPassInput.getAttribute('type') === 'password' ? 'text' : 'password';
     adminPassInput.setAttribute('type', type);
     togglePassword.textContent = type === 'password' ? '👁️' : '🙈';
 });
 
-// Process Login
 confirmLogin.addEventListener('click', () => {
     if (adminPassInput.value === ADMIN_PASSWORD) {
         sessionStorage.setItem('isAdmin', 'true');
         loginModal.style.display = 'none';
         checkAuth();
-    } else {
-        alert("Incorrect password!");
-    }
+    } else { alert("Incorrect password!"); }
 });
 
-// Process Logout
-logoutBtn.addEventListener('click', () => {
-    sessionStorage.removeItem('isAdmin');
-    checkAuth();
+logoutBtn.addEventListener('click', () => { sessionStorage.removeItem('isAdmin'); checkAuth(); });
+
+// --- CORE LOGIC ---
+
+// 1. Numeric Restriction for Input
+taskInput.addEventListener('input', (e) => {
+    // Instantly remove any non-numeric characters
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
 });
 
-// --- CORE LOGIC (CLOUD SYNC) ---
-
-// 1. Real-time Listener
+// 2. Real-time Listener
 db.ref('keycodes').on('value', (snapshot) => {
     const data = snapshot.val();
     const tasks = data ? Object.values(data).reverse() : [];
     renderUI(tasks);
 });
 
-// 2. Add New Code
+// 3. Add New Code
 taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const now = new Date();
     
+    const val = taskInput.value.trim();
+    if (!val) return; // Basic safety check
+
+    const now = new Date();
     const newTask = {
         id: Date.now(),
-        code: taskInput.value,
+        code: val,
         date: now.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' }),
         time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
         fullTimestamp: now.getTime()
     };
-
     db.ref('keycodes/' + newTask.id).set(newTask);
     taskInput.value = '';
 });
 
-// 3. Render UI
+// 4. Render UI
 function renderUI(tasks = []) {
     taskList.innerHTML = '';
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+
+    // Toggle Table Header Visibility (Action column)
+    const actionHeader = document.querySelector('#history-table th:nth-child(4)');
+    if (actionHeader) {
+        actionHeader.style.display = isAdmin ? 'table-cell' : 'none';
+    }
 
     if (tasks.length > 0) {
         const latest = tasks[0];
         currentCodeVal.innerText = latest.code;
         lastUpdatedVal.innerText = `${latest.date} ${latest.time}`;
 
-        // Next Update Calculation (4 hours after the last entry)
+        // Next Update Calculation
         const nextTimeDate = new Date(latest.fullTimestamp + 4 * 60 * 60 * 1000);
         nextUpdateVal.innerText = nextTimeDate.toLocaleString('en-US', { 
             hour: '2-digit', minute: '2-digit', second: '2-digit' 
         });
 
-        // Countdown Timer logic
+        // Countdown Timer
         clearInterval(countdownInterval);
         countdownInterval = setInterval(() => {
             const now = new Date().getTime();
             const expiration = latest.fullTimestamp + (4 * 60 * 60 * 1000);
             const dist = expiration - now;
-
             if (dist < 0) {
                 timeLeftDisplay.innerText = "EXPIRED";
                 timeLeftDisplay.style.color = "red";
@@ -150,16 +147,18 @@ function renderUI(tasks = []) {
             }
         }, 1000);
 
-        // Populate History Table
+        // Populate Rows with Conditional Action Column
         tasks.forEach((task) => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><strong>${task.code}</strong></td>
                 <td>${task.time}</td>
                 <td><small>${task.date}</small></td>
-                <td class="admin-only" style="display: ${isAdmin ? 'table-cell' : 'none'}">
-                    <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
-                </td>
+                ${isAdmin ? `
+                    <td>
+                        <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+                    </td>` : ''
+                }
             `;
             taskList.appendChild(row);
         });
@@ -171,14 +170,8 @@ function renderUI(tasks = []) {
     }
 }
 
-// 4. Global Delete Functions
-window.deleteTask = (id) => {
-    if(confirm("Delete this record?")) db.ref('keycodes/' + id).remove();
-};
+// 5. Global Delete Functions
+window.deleteTask = (id) => { if(confirm("Delete this record?")) db.ref('keycodes/' + id).remove(); };
+clearAllBtn.addEventListener('click', () => { if(confirm("Clear ALL records?")) db.ref('keycodes').remove(); });
 
-clearAllBtn.addEventListener('click', () => {
-    if(confirm("Are you sure you want to clear ALL records?")) db.ref('keycodes').remove();
-});
-
-// Initialize on Load
 document.addEventListener('DOMContentLoaded', checkAuth);
