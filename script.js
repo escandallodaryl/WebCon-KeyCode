@@ -40,13 +40,11 @@ const ADMIN_PASSWORD = "111";
 function checkAuth() {
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
     
-    // Toggle Admin Panel Visibility
     document.getElementById('admin-controls').style.display = isAdmin ? 'block' : 'none';
     loginBtn.style.display = isAdmin ? 'none' : 'inline-block';
     logoutBtn.style.display = isAdmin ? 'inline-block' : 'none';
     clearAllBtn.style.display = isAdmin ? 'inline-block' : 'none';
     
-    // Refresh UI to handle column visibility immediately
     db.ref('keycodes').once('value', (snapshot) => {
         const data = snapshot.val();
         const tasks = data ? Object.values(data).reverse() : [];
@@ -54,7 +52,7 @@ function checkAuth() {
     });
 }
 
-// Modal Event Listeners
+// Modal Listeners
 loginBtn.addEventListener('click', () => { loginModal.style.display = 'flex'; adminPassInput.value = ''; });
 cancelLogin.addEventListener('click', () => { loginModal.style.display = 'none'; });
 togglePassword.addEventListener('click', () => {
@@ -75,10 +73,11 @@ logoutBtn.addEventListener('click', () => { sessionStorage.removeItem('isAdmin')
 
 // --- CORE LOGIC ---
 
-// 1. Numeric Restriction for Input
+// 1. Numeric Restriction & Max 12 Digits
 taskInput.addEventListener('input', (e) => {
-    // Instantly remove any non-numeric characters
-    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    let val = e.target.value.replace(/[^0-9]/g, ''); // Numbers only
+    if (val.length > 12) val = val.substring(0, 12); // Max 12
+    e.target.value = val;
 });
 
 // 2. Real-time Listener
@@ -88,13 +87,18 @@ db.ref('keycodes').on('value', (snapshot) => {
     renderUI(tasks);
 });
 
-// 3. Add New Code
+// 3. Add New Code with Validation (Min 8 Digits)
 taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    
     const val = taskInput.value.trim();
-    if (!val) return; // Basic safety check
 
+    if (val.length < 8) {
+        alert("Error: KeyCode must be at least 8 digits.");
+        taskInput.style.borderColor = "red";
+        return;
+    }
+
+    taskInput.style.borderColor = "#ddd";
     const now = new Date();
     const newTask = {
         id: Date.now(),
@@ -112,22 +116,17 @@ function renderUI(tasks = []) {
     taskList.innerHTML = '';
     const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
 
-    // Toggle Table Header Visibility (Action column)
+    // Toggle Action Column Header
     const actionHeader = document.querySelector('#history-table th:nth-child(4)');
-    if (actionHeader) {
-        actionHeader.style.display = isAdmin ? 'table-cell' : 'none';
-    }
+    if (actionHeader) actionHeader.style.display = isAdmin ? 'table-cell' : 'none';
 
     if (tasks.length > 0) {
         const latest = tasks[0];
         currentCodeVal.innerText = latest.code;
         lastUpdatedVal.innerText = `${latest.date} ${latest.time}`;
 
-        // Next Update Calculation
         const nextTimeDate = new Date(latest.fullTimestamp + 4 * 60 * 60 * 1000);
-        nextUpdateVal.innerText = nextTimeDate.toLocaleString('en-US', { 
-            hour: '2-digit', minute: '2-digit', second: '2-digit' 
-        });
+        nextUpdateVal.innerText = nextTimeDate.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit' });
 
         // Countdown Timer
         clearInterval(countdownInterval);
@@ -147,18 +146,14 @@ function renderUI(tasks = []) {
             }
         }, 1000);
 
-        // Populate Rows with Conditional Action Column
+        // Populate Table
         tasks.forEach((task) => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><strong>${task.code}</strong></td>
                 <td>${task.time}</td>
                 <td><small>${task.date}</small></td>
-                ${isAdmin ? `
-                    <td>
-                        <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
-                    </td>` : ''
-                }
+                ${isAdmin ? `<td><button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button></td>` : ''}
             `;
             taskList.appendChild(row);
         });
@@ -170,7 +165,7 @@ function renderUI(tasks = []) {
     }
 }
 
-// 5. Global Delete Functions
+// 5. Delete Functions
 window.deleteTask = (id) => { if(confirm("Delete this record?")) db.ref('keycodes/' + id).remove(); };
 clearAllBtn.addEventListener('click', () => { if(confirm("Clear ALL records?")) db.ref('keycodes').remove(); });
 
